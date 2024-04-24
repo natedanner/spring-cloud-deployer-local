@@ -104,7 +104,7 @@ public class LocalTaskLauncherIntegrationTests extends AbstractTaskLauncherInteg
 		if (LocalDeployerUtils.isWindows()) {
 			// tweak random dir name on win to be shorter
 			String uuid = UUID.randomUUID().toString();
-			long l = ByteBuffer.wrap(uuid.toString().getBytes()).getLong();
+			long l = ByteBuffer.wrap(uuid.getBytes()).getLong();
 			return testName + Long.toString(l, Character.MAX_RADIX);
 		}
 		else {
@@ -178,7 +178,7 @@ public class LocalTaskLauncherIntegrationTests extends AbstractTaskLauncherInteg
 		beforeDirs.add(customWorkDirRoot);
 		if (Files.exists(customWorkDirRoot)) {
 			beforeDirs = Files.walk(customWorkDirRoot, 1)
-					.filter(path -> Files.isDirectory(path))
+					.filter(Files::isDirectory)
 					.collect(Collectors.toList());
 		}
 
@@ -186,7 +186,7 @@ public class LocalTaskLauncherIntegrationTests extends AbstractTaskLauncherInteg
 		assertThat(output).contains("Logs will be inherited.");
 
 		List<Path> afterDirs = Files.walk(customWorkDirRoot, 1)
-				.filter(path -> Files.isDirectory(path))
+				.filter(Files::isDirectory)
 				.collect(Collectors.toList());
 		assertThat(afterDirs).as("Additional working directory not created").hasSize(beforeDirs.size() + 1);
 
@@ -209,9 +209,8 @@ public class LocalTaskLauncherIntegrationTests extends AbstractTaskLauncherInteg
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher().status(launchId1).getState()).isEqualTo(LaunchState.complete);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher().status(launchId1).getState()).isEqualTo(LaunchState.complete));
 
 		String logContent = taskLauncher().getLog(launchId1);
 		assertThat(logContent).contains("Starting DeployerIntegrationTestApplication");
@@ -232,9 +231,8 @@ public class LocalTaskLauncherIntegrationTests extends AbstractTaskLauncherInteg
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher().status(launchId1).getState()).isEqualTo(LaunchState.complete);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher().status(launchId1).getState()).isEqualTo(LaunchState.complete));
 
 		String launchId2 = taskLauncher().launch(request);
 
@@ -244,15 +242,13 @@ public class LocalTaskLauncherIntegrationTests extends AbstractTaskLauncherInteg
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher().status(launchId2).getState()).isEqualTo(LaunchState.complete);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher().status(launchId2).getState()).isEqualTo(LaunchState.complete));
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher().status(launchId1).getState()).isEqualTo(LaunchState.unknown);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher().status(launchId1).getState()).isEqualTo(LaunchState.unknown));
 
 		String launchId3 = taskLauncher().launch(request);
 
@@ -263,21 +259,18 @@ public class LocalTaskLauncherIntegrationTests extends AbstractTaskLauncherInteg
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher().status(launchId3).getState()).isEqualTo(LaunchState.complete);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher().status(launchId3).getState()).isEqualTo(LaunchState.complete));
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher().status(launchId1).getState()).isEqualTo(LaunchState.unknown);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher().status(launchId1).getState()).isEqualTo(LaunchState.unknown));
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher().status(launchId2).getState()).isEqualTo(LaunchState.unknown);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher().status(launchId2).getState()).isEqualTo(LaunchState.unknown));
 
 		taskLauncher().destroy(definition.getName());
 	}
@@ -296,23 +289,20 @@ public class LocalTaskLauncherIntegrationTests extends AbstractTaskLauncherInteg
 		Timeout timeout = this.deploymentTimeout();
 		await().pollInterval(Duration.ofMillis(1))
                 .atMost(Duration.ofSeconds(30))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher.getRunningTaskExecutionCount()).isEqualTo(1);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher.getRunningTaskExecutionCount()).isEqualTo(1));
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher().status(launchId).getState()).isEqualTo(LaunchState.complete);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher().status(launchId).getState()).isEqualTo(LaunchState.complete));
 
 		this.taskLauncher().destroy(definition.getName());
 
 		await().pollInterval(Duration.ofMillis(timeout.pause))
                 .atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-                .untilAsserted(() -> {
-			assertThat(taskLauncher.getRunningTaskExecutionCount()).isEqualTo(0);
-        });
+                .untilAsserted(() ->
+			assertThat(taskLauncher.getRunningTaskExecutionCount()).isEqualTo(0));
 	}
 
 	@Configuration

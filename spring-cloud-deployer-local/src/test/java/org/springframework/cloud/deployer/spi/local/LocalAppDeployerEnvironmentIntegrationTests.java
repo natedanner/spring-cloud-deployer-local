@@ -102,7 +102,7 @@ public class LocalAppDeployerEnvironmentIntegrationTests extends AbstractAppDepl
 		if (LocalDeployerUtils.isWindows()) {
 			// tweak random dir name on win to be shorter
 			String uuid = UUID.randomUUID().toString();
-			long l = ByteBuffer.wrap(uuid.toString().getBytes()).getLong();
+			long l = ByteBuffer.wrap(uuid.getBytes()).getLong();
 			return testName + Long.toString(l, Character.MAX_RADIX);
 		}
 		else {
@@ -127,9 +127,8 @@ public class LocalAppDeployerEnvironmentIntegrationTests extends AbstractAppDepl
 		Timeout timeout = deploymentTimeout();
 		await().pollInterval(Duration.ofMillis(timeout.pause))
 				.atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-				.untilAsserted(() -> {
-			assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.deployed);
-		});
+				.untilAsserted(() ->
+			assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.deployed));
 
 		Map<String, AppInstanceStatus> instances = appDeployer().status(deploymentId).getInstances();
 		String url = null;
@@ -148,9 +147,8 @@ public class LocalAppDeployerEnvironmentIntegrationTests extends AbstractAppDepl
 		appDeployer().undeploy(deploymentId);
 		await().pollInterval(Duration.ofMillis(timeout.pause))
 				.atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-				.untilAsserted(() -> {
-			assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.unknown);
-		});
+				.untilAsserted(() ->
+			assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.unknown));
 
 		assertThat(url).isNotNull();
 		if (LocalDeployerUtils.isWindows()) {
@@ -182,9 +180,8 @@ public class LocalAppDeployerEnvironmentIntegrationTests extends AbstractAppDepl
 		Timeout timeout = deploymentTimeout();
 		await().pollInterval(Duration.ofMillis(timeout.pause))
 				.atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-				.untilAsserted(() -> {
-			assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.deployed);
-		});
+				.untilAsserted(() ->
+			assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.deployed));
 
 		log.info("Undeploying {}...", deploymentId);
 
@@ -192,9 +189,8 @@ public class LocalAppDeployerEnvironmentIntegrationTests extends AbstractAppDepl
 		appDeployer().undeploy(deploymentId);
 		await().pollInterval(Duration.ofMillis(timeout.pause))
 				.atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-				.untilAsserted(() -> {
-			assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.unknown);
-		});
+				.untilAsserted(() ->
+			assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.unknown));
 	}
 
 	@Test
@@ -264,9 +260,8 @@ public class LocalAppDeployerEnvironmentIntegrationTests extends AbstractAppDepl
 		Timeout timeout = deploymentTimeout();
 		await().pollInterval(Duration.ofMillis(timeout.pause))
 				.atMost(Duration.ofMillis(timeout.maxAttempts * timeout.pause))
-				.untilAsserted(() -> {
-					assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.deployed);
-				});
+				.untilAsserted(() ->
+					assertThat(appDeployer().status(deploymentId).getState()).isEqualTo(DeploymentState.deployed));
 		String id = deploymentId + "-0";
 		Map<String, Object> env = actuatorOperations
 				.getFromActuator(deploymentId, id, "/env", Map.class);

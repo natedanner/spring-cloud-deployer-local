@@ -82,9 +82,8 @@ public class JavaCommandBuilder implements CommandBuilder {
 		Map<String, String> deploymentProperties = request.getDeploymentProperties();
 		commands.add(bindDeploymentProperties(deploymentProperties).getJavaCmd());
 
-		debugAddressOption.ifPresent(debugAddress -> {
-			commands.add(getJdwpOptions(debugAddress.getSuspend(), debugAddress.getAddress()));
-		});
+		debugAddressOption.ifPresent(debugAddress ->
+			commands.add(getJdwpOptions(debugAddress.getSuspend(), debugAddress.getAddress())));
 
 		// Add Java System Properties (ie -Dmy.prop=val) before main class or -jar
 		addJavaOptions(commands, deploymentProperties, properties);
